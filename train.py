@@ -25,7 +25,9 @@ def main(args):
     logger.info(f"Create model: {args.model}_{args.name}_{args.data}")
 
     model = build_model(args)
-    model.to(args.devices)
+
+    device = torch.device(args.devices if torch.cuda.is_available() else "cpu")
+    model.to(device)
 
     if args.optimizer is not None:
         if args.optimizer == "Adam":
@@ -40,6 +42,12 @@ def main(args):
         optimizer = optim.AdamW(model.parameters(), lr = args.lr, betas= [args.beta1, args.beta2],
                                     weight_decay= args.weight_decay, eps= args.eps)
 
+    if args.dtype.lower() == "bf16":
+        dtype = torch.bfloat16
+    elif args.dtype.lower() == "fp16":
+        dtype = torch.float16
+    else:
+        dtype = torch.float32
 
     criterion = torch.nn.CrossEntropyLoss()
 
@@ -52,11 +60,8 @@ def main(args):
         running_loss = 0.
         # last_loss = 0.
         for idx, (x, y) in enumerate(tqdm(train_set)):
-            if args.dtype == "bf16":
-                x = x.to(args.devices).to(torch.bfloat16)
-            else:
-                x = x.to(args.devices).to(torch.float16)
-            y = y.to(args.devices).long() #  (,num_cl
+            x = x.to(device).to(dtype)
+            y = y.to(device).long() #  (,num_cl
             
             optimizer.zero_grad()
             outputs = model(x)
@@ -76,20 +81,17 @@ def main(args):
         with torch.no_grad():
             val_loss = 0.
             acc = 0.
-            for idx, (samples, targets) in enumerate(tqdm(test_set)):
-                if args.dtype == "bf16":
-                    samples = samples.to(args.devices).to(torch.bfloat16)
-                else:
-                    samples = samples.to(args.devices).to(torch.float16)
-                targets = targets.to(args.devices).long() #  (,num_cl
+            for idx, (samples, targets) in enumerate(tqdm(test_set)):                
+                samples = samples.to(device).to(dtype)           
+                targets = targets.to(device).long() #  (,num_cl
 
                 predicted = model(samples)  # (B, num_classes)
                 loss = criterion(predicted, targets)
 
                 val_loss += loss.item()
-                outputs = torch.argmax(input= predicted, dim=1)  # B, num_classes -> , labels
+                outputs = torch.argmax(input= predicted, dim=1).cpu()  # B, num_classes -> , labels
 
-                accuracy = torch.sum(targets == outputs).item()
+                accuracy = torch.sum(targets == outputs).item() / targets.size(0)
                 acc += accuracy
 
         avg_loss = running_loss / len(train_set)
