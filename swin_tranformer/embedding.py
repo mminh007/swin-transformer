@@ -2,7 +2,7 @@
 import torch 
 import torch.nn as nn
 
-class Pathches(nn.Module):
+class Patches(nn.Module):
     """
     """
     def __init__(self,
@@ -25,7 +25,7 @@ class Pathches(nn.Module):
     def forward(self, x):
 
         x = self.proj(x)
-        B, C, H, W,  = x.shape
+        B, C, H, W  = x.shape
 
         x = x.permute(0,2,3,1).contiguous().view(B, -1, self.embed_dim) # B, embed_dim,H,W -> B,H,W,embed_dim -> B, H*W, embed_dim
         
@@ -65,7 +65,9 @@ class PatchMerge(nn.Module):
         self.reduce = nn.Linear(4 * embed_dim, 2 * embed_dim)
         if norm_layer is not None:
             self.norm = nn.LayerNorm(4 * embed_dim)
-    
+        else:
+            self.norm = None
+
     def forward(self, x):
         B, L, C = x.shape  # B, H*W, embed_dim
         

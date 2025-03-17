@@ -15,9 +15,9 @@ def setup_parse():
     parser.add_argument("--labels", type=int, help="number of labels")
     
     parser.add_argument("--patch-size", type=int)
-    parser.add_argument("--nheads", type=list)
+    parser.add_argument("--nheads", nargs='+', type=int)
     parser.add_argument("--embed-dim", type=int)
-    parser.add_argument("--depths", type=list)
+    parser.add_argument("--depths", nargs='+', type=int)
     parser.add_argument("--window-size", type=int)
     parser.add_argument("--mlp-ratio", type=int)
     parser.add_argument("--qkv-bias", type=bool)
@@ -54,6 +54,8 @@ def update_config(args: argparse.Namespace):
     
     for key, value in data.items():
         if getattr(args, key) is None:
+            if key in ["nheads", "depths"] and isinstance(value, str):
+                value = list(map(int, value.split()))
             setattr(args, key, value)
 
     # config_args = argparse.Namespace(**data)
