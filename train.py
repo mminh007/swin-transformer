@@ -89,7 +89,7 @@ def main(args):
                 loss = criterion(predicted, targets)
 
                 val_loss += loss.item()
-                outputs = torch.argmax(input= predicted, dim=1).cpu()  # B, num_classes -> , labels
+                outputs = torch.argmax(input= predicted, dim=1)  # B, num_classes -> , labels
 
                 accuracy = torch.sum(targets == outputs).item() / targets.size(0)
                 acc += accuracy
