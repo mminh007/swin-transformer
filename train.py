@@ -91,7 +91,7 @@ def main(args):
                 val_loss += loss.item()
                 outputs = torch.argmax(input= predicted, dim=1)  # B, num_classes -> , labels
 
-                accuracy = torch.sum(targets == outputs).item() / targets.size(0)
+                accuracy = torch.sum(targets == outputs).item()
                 acc += accuracy
 
         avg_loss = running_loss / len(train_set)
