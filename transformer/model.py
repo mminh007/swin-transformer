@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from transformer.embedding import Pathches
+from transformer.embedding import Patches
 from transformer.encoder import Stage
 
 
@@ -26,7 +26,7 @@ class SwinTransformer(nn.Module):
         # image size after embedding 
         self.patches_resolution = self.image_size // patch_size
 
-        self.embedding = Pathches(kernel_size=patch_size, stride=patch_size, padding=None,
+        self.embedding = Patches(kernel_size=patch_size, stride=patch_size, padding=None,
                                   in_chans=in_chans, embed_dim=self.embed_dim, norm_layer=True)
 
         # adding position embedding
