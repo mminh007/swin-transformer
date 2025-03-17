@@ -1,5 +1,4 @@
 import yaml
-import os
 import argparse
 
 def setup_parse():

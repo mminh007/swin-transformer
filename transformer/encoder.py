@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
-from swin_tranformer.embedding import PatchMerge
+from transformer.embedding import PatchMerge
 
 class Stage(nn.Module):
     """
