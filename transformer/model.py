@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from swin_tranformer.embedding import Pathches
-from swin_tranformer.encoder import Stage
+from transformer.embedding import Pathches
+from transformer.encoder import Stage
 
 
 class SwinTransformer(nn.Module):

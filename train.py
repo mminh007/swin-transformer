@@ -8,7 +8,7 @@ from tqdm import tqdm
 import logging
 import datetime
 from data.build import build_dataloader
-from swin_tranformer.model import build_model
+from transformer.model import build_model
 from config import setup_parse, update_config
 import time
 
